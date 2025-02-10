@@ -12,6 +12,7 @@ type Block struct {
 	Data          *Data
 	PrevBlockHash []byte
 	Hash          []byte
+	Nonce         int
 }
 
 type Data struct {
@@ -27,8 +28,13 @@ func (b *Block) SetHash() {
 }
 
 func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{time.Now().Unix(), &Data{[]byte(data)}, prevBlockHash, []byte{}}
-	block.SetHash()
+	block := &Block{time.Now().Unix(), &Data{[]byte(data)}, prevBlockHash, []byte{}, 0}
+	pow := NewProofOfWork(block)
+	nonce, hash := pow.Run()
+
+	block.Hash = hash[:]
+	block.Nonce = nonce
+
 	return block
 }
 
